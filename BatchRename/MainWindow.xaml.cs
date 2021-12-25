@@ -15,6 +15,17 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
 using Fluent;
+using System.IO;
+namespace System.IO
+{
+    public static class FileInfoExtensions
+    {
+        public static void Rename(this FileInfo fileInfo, string newName)
+        {
+            fileInfo.MoveTo(Path.Combine(fileInfo.Directory.FullName, newName));
+        }
+    }
+}
 
 namespace BatchRename
 {
@@ -39,17 +50,47 @@ namespace BatchRename
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Multiselect = true;
             openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            openFileDialog.ShowDialog();
-           
-            foreach (string filename in openFileDialog.FileNames)
+            if (openFileDialog.ShowDialog() == true)
             {
-                CStorageFile f = new CStorageFile();
-                f.Name = filename;
-               
-              // f.Name = Path.GetFileName(filename);
-                list.Add(f);
-            }
-           
+                foreach (string filename in openFileDialog.FileNames)
+                {
+                    CStorageFile f = new CStorageFile();
+                    f.Name = System.IO.Path.GetFileName(filename);
+                    f.NewName = f.Name;
+                    f.Path = filename;
+                    f.Error = "None";
+                    list.Add(f);
+                }
+            };
         }
+
+        private void btnRemove_Click(object sender, RoutedEventArgs e)
+        {
+            int index = listFiles.SelectedIndex;
+            if (index < 0 || index > list.Count)
+            {
+                return;
+            }
+            list.RemoveAt(index);
+        }
+
+        private void btnClearAll_Click(object sender, RoutedEventArgs e)
+        {
+            list.Clear();
+        }
+
+        private void btnConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                FileInfo file = new FileInfo(list[i].Path);
+                if (file.Exists)
+                {
+                    file.Rename(list[i].NewName);
+                    list[i].Name = list[i].NewName;
+                }
+            }   
+        }
+        
     }
 }

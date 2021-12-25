@@ -21,12 +21,12 @@
                             <Image Source="Images/add.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Fluent:Button.LargeIcon>
                     </Fluent:Button>
-                    <Fluent:Button x:Name="btnRemove" Width="50" Header="Remove" >
+                    <Fluent:Button x:Name="btnRemove" Width="50" Header="Remove" Click="btnRemove_Click" >
                         <Fluent:Button.LargeIcon>
                             <Image Source="Images/remove.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Fluent:Button.LargeIcon>
                     </Fluent:Button>
-                    <Fluent:Button x:Name="btnClearAll" Width="50" Header="Clear All">
+                    <Fluent:Button x:Name="btnClearAll" Width="50" Header="Clear All" Click="btnClearAll_Click">
                         <Fluent:Button.LargeIcon>
                             <Image Source="Images/clearAll.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Fluent:Button.LargeIcon>
@@ -61,7 +61,7 @@
                 <ColumnDefinition Width="600"></ColumnDefinition>
                 <ColumnDefinition Width="200"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Border CornerRadius="0,0,20,20" Grid.Column="0"  BorderBrush="Red" BorderThickness="2" >
+            
                 <ListView x:Name="listFiles" Height="auto"  Background="Transparent"  VerticalAlignment="Top"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                       Grid.Column="0">
@@ -96,12 +96,12 @@
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
             </ListView>
-            </Border>
-            <Border CornerRadius="0,0,20,20" Grid.Column="1" BorderBrush="Red" BorderThickness="2" Margin="10" >
-            <ListView Name="listChoice" Background="Transparent" Height="200" Grid.Column="1">
+
+            <Canvas Grid.Column="1" Height="300">
+            <ListView Name="listChoice" Background="Transparent" Height="200" Margin="10" Grid.Column="1">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Changed" Width="170"></GridViewColumn>
+                        <GridViewColumn Header="Changed" Width="180"></GridViewColumn>
                     </GridView>
                 </ListView.View>
                 <ListView.ItemsPanel>
@@ -123,7 +123,49 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            </Border>
+                <ToggleButton Name="btnConfirm" Click="btnConfirm_Click" Margin="0 15 0 15" Canvas.Top="250" Canvas.Left="70">
+                    <ToggleButton.Style>
+                        <Style TargetType="{x:Type ToggleButton}">
+                            <Setter Property="Foreground" Value="White"></Setter>
+                            <Setter Property="Background" Value="#D23232"></Setter>
+                            <Setter Property="Content" Value=" Confirm "></Setter>
+                            <Setter Property="FontSize" Value="15"></Setter>
+                            <Setter Property="FontWeight" Value="Bold"></Setter>
+                            <Setter Property="ToggleButton.Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect Color="Gray" Direction="270" ShadowDepth="2" BlurRadius="5" Opacity="0.3" />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                                            Background="{TemplateBinding Background}">
+                                            <ContentPresenter HorizontalAlignment="Center"                  
+                                              VerticalAlignment="Center"/>
+
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="White"></Setter>
+                                    <Setter Property="Background" Value="#8B0000"/>
+                                    <Setter Property="BorderThickness" Value="1,1,2,2"></Setter>
+                                </Trigger>                                
+                            </Style.Triggers>
+                        </Style>
+                    </ToggleButton.Style>
+                    <ToggleButton.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </ToggleButton.Resources>
+                </ToggleButton>
+
+            </Canvas>
         </Grid>
+            
     </StackPanel>
 </Fluent:RibbonWindow>
