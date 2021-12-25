@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\add.png" />
+    <None Remove="Images\clearAll.png" />
+    <None Remove="Images\newcase.png" />
+    <None Remove="Images\normalize.png" />
+    <None Remove="Images\random.png" />
+    <None Remove="Images\remove.png" />
+    <None Remove="Images\replace.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Fluent.Ribbon" Version="9.0.0" />
+    <PackageReference Include="PropertyChanged.Fody" Version="3.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\add.png" />
+    <Resource Include="Images\clearAll.png" />
+    <Resource Include="Images\newcase.png" />
+    <Resource Include="Images\normalize.png" />
+    <Resource Include="Images\random.png" />
+    <Resource Include="Images\remove.png" />
+    <Resource Include="Images\replace.png" />
+  </ItemGroup>
+
+</Project>
