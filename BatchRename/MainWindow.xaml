@@ -48,7 +48,7 @@
                             <Image Source="Images/newcase.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Fluent:Button.LargeIcon>
                     </Fluent:Button>
-                    <Fluent:Button x:Name="btnNormalize" Width="65" Header="Normalize">
+                    <Fluent:Button x:Name="btnNormalize" Width="65" Header="Normalize" Click="btnNormalize_Click">
                         <Fluent:Button.LargeIcon>
                             <Image Source="Images/normalize.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Fluent:Button.LargeIcon>

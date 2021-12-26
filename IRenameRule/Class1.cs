@@ -1,17 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace BatchRename
+namespace IRenameRules
 {
-    internal interface IRenameRule
+    public interface IRenameRule
     {
-        string key();
+        string Key { get; }
         string Description { get; set; }
 
         string Rename(string original);
         string Rename(string original, int index);
+
+        public IRenameRule Clone(List<string> data);
     }
 }

@@ -24,6 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IRenameRule\IRenameRule.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Images\add.png" />
     <Resource Include="Images\clearAll.png" />
     <Resource Include="Images\counter.png" />

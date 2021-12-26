@@ -16,6 +16,9 @@ using System.Windows.Shapes;
 using Microsoft.Win32;
 using Fluent;
 using System.IO;
+using IRenameRules;
+using System.Reflection;
+
 namespace System.IO
 {
     public static class FileInfoExtensions
@@ -41,11 +44,45 @@ namespace BatchRename
             InitializeComponent();
         }
 
+        List<IRenameRule> _prototypes; // Prototype
+
+       
         private void RibbonWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            //TODO load DLL file
+            
             listFiles.ItemsSource = list;
             listChoice.ItemsSource = rules;
+            _prototypes = new List<IRenameRule>();
+
+            // Nạp danh sách các tập tin dll
+            string exePath = Assembly.GetExecutingAssembly().Location;
+            string folder = System.IO.Path.GetDirectoryName(exePath);
+            var fis = new DirectoryInfo(folder).GetFiles("*.dll");
+
+            foreach (var f in fis) // Lần lượt duyệt qua các file dll
+            {
+                var assembly = Assembly.LoadFile(f.FullName);
+                var types = assembly.GetTypes();
+
+                foreach (var t in types)
+                {
+                    if (t.IsClass && typeof(IRenameRule).IsAssignableFrom(t))
+                    {
+                        IRenameRule c = (Activator.CreateInstance(t) as IRenameRule);
+                        _prototypes.Add(c);
+                    }
+                }
+            }
+            if(!_prototypes.Any(item => item.Key== "replaceextension"))
+            {
+                btnReplace.Visibility = Visibility.Hidden;
+                btnReplace.Visibility = Visibility.Collapsed;
+            }
+            if (!_prototypes.Any(item => item.Key == "addcounter"))
+            {
+                btnAddCounter.Visibility = Visibility.Hidden;
+                btnAddCounter.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
@@ -135,7 +172,10 @@ namespace BatchRename
         {
             for (int i = 0; i < list.Count; i++)
             {
-                list[i].NewName = GenerateName(20);
+                int id = list[i].NewName.LastIndexOf('.');
+
+                string ex = list[i].NewName.Substring(id, list[i].NewName.Length - id);
+                list[i].NewName = $"{GenerateName(15)}{ex}";
             }
         }
 
@@ -145,7 +185,11 @@ namespace BatchRename
             screen.NewRuleReceived += (method, extension) =>
             {
                 //Check Method
-                CReplceExtensionRule rule = new CReplceExtensionRule(extension);
+                var result = _prototypes.Find(item => item.Key == method);
+                List<string> data = new List<string>();
+                data.Add(extension);
+                IRenameRule rule = result.Clone(data);
+                
                 rule.Description= "Đổi phần mở rộng thành: " + extension;
                 rules.Add(rule);
             };
@@ -164,7 +208,11 @@ namespace BatchRename
             screen.NewRuleReceived += (method, start, step) =>
             {
                 //Check Method
-                CAddCounterRule rule = new CAddCounterRule(start,step);
+                var result = _prototypes.Find(item => item.Key == method);
+                List< string> data = new List< string>();
+                data.Add(start.ToString());
+                data.Add(step.ToString());
+                IRenameRule rule = result.Clone(data);
                 rule.Description = $"Thêm số thứ tự vào cuối file (start: {start}, step: {step})";
                 rules.Add(rule);
             };
@@ -185,20 +233,21 @@ namespace BatchRename
             {
                 //Check Method
                 IRenameRule rule;
+                var result = _prototypes.Find(item => item.Key == method);
                 switch (method)
                 {
-                    case "lowercase":
-                        rule = new CToLowerRule();
+                    case "lowercase":                      
+                        rule = result.Clone(new List<string>());
                         rule.Description = "Tất cả chuyển sang chữ thường";
                         rules.Add(rule);
                         break;
                     case "removespace":
-                        rule = new CRemoveSpaceRule();
+                        rule = result.Clone(new List<string>());
                         rule.Description = "Xóa tất cả khoảng trắng";
                         rules.Add(rule);
                         break;
-                    case "pascalcase":
-                        rule = new CParcalCaseRule();
+                    case "parcalcase":
+                        rule = result.Clone(new List<string>());
                         rule.Description = "Chuyển về dạng pascal case";
                         rules.Add(rule);
                         break;
@@ -217,6 +266,51 @@ namespace BatchRename
             };
         }
 
-
+        private void btnNormalize_Click(object sender, RoutedEventArgs e)
+        {
+            int count = rules.Count;
+            NormalizeDialog screen = new NormalizeDialog();
+            screen.NewRuleReceived += (method, data) =>
+            {
+                //Check Method
+                IRenameRule rule;
+                var datas = new List<string>();
+                datas.Add(data);
+                var result = _prototypes.Find(item => item.Key == method);
+                switch (method)
+                {
+                    case "addprefix":
+                        rule = result.Clone(datas);
+                        rule.Description = $"Thêm tiền tố {data}";
+                        rules.Add(rule);
+                        break;
+                    case "addsuffix":
+                        rule = result.Clone(datas);
+                        rule.Description = $"Thêm hậu tố {data}";
+                        rules.Add(rule);
+                        break;
+                    case "replacer":
+                        List<string> needles=new List<string>();
+                        needles.Add("-");
+                        needles.Add("_");
+                        needles.Add(" ");
+                        needles.Add(".");
+                        rule = result.Clone(needles);
+                        rule.Description = "Thay thế các ký tự '-', '_', ' ' bằng '.'";
+                        rules.Add(rule);
+                        break;
+                }
+            };
+            if (screen.ShowDialog() == true)
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    for (int j = count; j < rules.Count; j++)
+                    {
+                        list[i].NewName = rules[j].Rename(list[i].NewName);
+                    }
+                }
+            };
+        }
     }
 }
