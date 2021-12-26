@@ -1,0 +1,18 @@
+﻿<Window x:Class="BatchRename.AddCounterDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BatchRename"
+        mc:Ignorable="d"
+        Title="AddCounterDialog" Height="212" Width="271">
+    <Canvas Height="195" VerticalAlignment="Top">
+        <Label Content="ĐÁNH SỐ THỨ TỰ" FontSize="16" Height="42" Width="142" Canvas.Left="71" Canvas.Top="10" RenderTransformOrigin="0.332,1.373"/>
+        <TextBlock Canvas.Left="62" TextWrapping="Wrap" Text="Bắt đầu:" Canvas.Top="71"/>
+        <TextBox Height="17" Canvas.Left="141" TextWrapping="Wrap" Canvas.Top="70" Width="63" Name="txtStart"/>
+        <TextBlock Canvas.Left="62" TextWrapping="Wrap" Text="Bước nhảy:" Canvas.Top="101"/>
+        <TextBox Height="17" Canvas.Left="141" TextWrapping="Wrap" Canvas.Top="100" Width="63" Name="txtStep"/>
+        <Button Content="Cancel" IsCancel="True" Canvas.Left="51" Canvas.Top="131" Width="75" Name="CancelButton" RenderTransformOrigin="0.987,-3.906"/>
+        <Button Content="OK" Canvas.Left="151" Canvas.Top="131" Width="75" Name="OkButton" Click="OkButton_Click"/>
+    </Canvas>
+</Window>

@@ -33,12 +33,17 @@
                     </Fluent:Button>
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="Tool">
-                    <Fluent:Button x:Name="btnReplace" Width="65" Header="Replace">
+                    <Fluent:Button x:Name="btnReplace" Width="65" Header="Replace Extension" Click="btnReplace_Click">
                         <Fluent:Button.LargeIcon>
                             <Image Source="Images/replace.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Fluent:Button.LargeIcon>
                     </Fluent:Button>
-                    <Fluent:Button x:Name="btnNewCase" Width="65" Header="New Case" >
+                    <Fluent:Button x:Name="btnAddCounter" Width="65" Header="Add Counter" Click="btnAddCounter_Click">
+                        <Fluent:Button.LargeIcon>
+                            <Image Source="Images/counter.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        </Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                    <Fluent:Button x:Name="btnNewCase" Width="65" Header="New Case" Click="btnNewCase_Click" >
                         <Fluent:Button.LargeIcon>
                             <Image Source="Images/newcase.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Fluent:Button.LargeIcon>
@@ -48,7 +53,7 @@
                             <Image Source="Images/normalize.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Fluent:Button.LargeIcon>
                     </Fluent:Button>
-                    <Fluent:Button x:Name="btnRandomName" Width="65" Header="Random Name">
+                    <Fluent:Button x:Name="btnRandomName" Width="65" Header="Random Name" Click="btnRandomName_Click">
                         <Fluent:Button.LargeIcon>
                             <Image Source="Images/random.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Fluent:Button.LargeIcon>
@@ -98,12 +103,9 @@
             </ListView>
 
             <Canvas Grid.Column="1" Height="300">
-            <ListView Name="listChoice" Background="Transparent" Height="200" Margin="10" Grid.Column="1">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Changed" Width="180"></GridViewColumn>
-                    </GridView>
-                </ListView.View>
+            <ListView Name="listChoice" Background="Transparent" Height="200" Margin="5,10,0,0" Grid.Column="1" Width="170" Canvas.Left="10" Canvas.Top="10"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel Orientation="Vertical" />
@@ -112,13 +114,16 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Border BorderBrush="Transparent" Height="35">
-                            <TextBlock TextWrapping="Wrap"
-                                       Text="{Binding}"
-                                   FontSize="10"
+
+                                <TextBlock TextWrapping="Wrap"
+                                       FontSize="8"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Center"
                                        Foreground="Blue"
-                                       FontWeight="Bold"/>
+                                       FontWeight="Bold">
+                                    <Run> ◉ </Run>
+                                    <Run  Text="{Binding Description}"></Run>
+                                </TextBlock>
                         </Border>
                     </DataTemplate>
                 </ListView.ItemTemplate>
