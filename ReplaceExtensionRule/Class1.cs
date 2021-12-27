@@ -39,7 +39,10 @@ namespace ReplaceExtensionRule
 
         public IRenameRule Clone(List<string> data)
         {
-            return new CReplceExtensionRule(data[0]) ;
+            var result = new CReplceExtensionRule(data[0]);
+
+            return result;
         }
+
     }
 }

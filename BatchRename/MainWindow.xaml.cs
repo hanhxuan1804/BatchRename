@@ -12,12 +12,13 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 using Microsoft.Win32;
 using Fluent;
 using System.IO;
 using IRenameRules;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace System.IO
 {
@@ -56,24 +57,26 @@ namespace BatchRename
 
             // Nạp danh sách các tập tin dll
             string exePath = Assembly.GetExecutingAssembly().Location;
-            string folder = System.IO.Path.GetDirectoryName(exePath);
-            var fis = new DirectoryInfo(folder).GetFiles("*.dll");
+            string folder = Path.GetDirectoryName(exePath)+"\\DLL";
+            FileInfo[] fis = new DirectoryInfo(folder).GetFiles("*.dll");
 
             foreach (var f in fis) // Lần lượt duyệt qua các file dll
             {
-                var assembly = Assembly.LoadFile(f.FullName);
-                var types = assembly.GetTypes();
 
+
+                Assembly assembly = Assembly.LoadFile(f.FullName);
+                var types = assembly.GetTypes();
+                
                 foreach (var t in types)
                 {
                     if (t.IsClass && typeof(IRenameRule).IsAssignableFrom(t))
                     {
-                        IRenameRule c = (Activator.CreateInstance(t) as IRenameRule);
+                        IRenameRule c = (IRenameRule)Activator.CreateInstance(t);
                         _prototypes.Add(c);
                     }
                 }
             }
-            if(!_prototypes.Any(item => item.Key== "replaceextension"))
+            if (!_prototypes.Any(item => item.Key== "replaceextension"))
             {
                 btnReplace.Visibility = Visibility.Hidden;
                 btnReplace.Visibility = Visibility.Collapsed;
@@ -185,7 +188,7 @@ namespace BatchRename
             screen.NewRuleReceived += (method, extension) =>
             {
                 //Check Method
-                var result = _prototypes.Find(item => item.Key == method);
+                IRenameRule result = _prototypes.Find(item => item.Key == method);               
                 List<string> data = new List<string>();
                 data.Add(extension);
                 IRenameRule rule = result.Clone(data);
@@ -311,6 +314,51 @@ namespace BatchRename
                     }
                 }
             };
+        }
+
+        //List choice edit
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            //edit
+            int id = listChoice.SelectedIndex;
+            switch (rules[id].Key) {
+                case "replaceextension":
+                    ReplaceExtensionDialog screen = new ReplaceExtensionDialog();
+                    screen.NewRuleReceived += (method, extension) =>
+                    {
+                        //Check Method
+                        var result = _prototypes.Find(item => item.Key == method);
+                        List<string> data = new List<string>();
+                        data.Add(extension);
+                        IRenameRule rule = result.Clone(data);
+
+                        rule.Description = "Đổi phần mở rộng thành: " + extension;
+                        rules[id] = rule;
+                    };
+                    if (screen.ShowDialog() == true)
+                    {
+                        reloadAllRules();
+                    };
+                    break;
+                    default: break;
+            }
+
+        }
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            rules.RemoveAt(listChoice.SelectedIndex);
+        }
+        public void reloadAllRules() {
+            for (int i = 0; i < list.Count; i++)
+           
+            {
+                foreach (var r in rules)
+                {
+                    list[i].NewName = r.Rename(list[i].Name);
+                    list[i].NewName = r.Rename(list[i].NewName, i);
+                }
+            }
         }
     }
 }

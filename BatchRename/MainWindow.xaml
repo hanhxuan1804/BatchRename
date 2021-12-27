@@ -105,16 +105,27 @@
             <Canvas Grid.Column="1" Height="300">
             <ListView Name="listChoice" Background="Transparent" Height="200" Margin="5,10,0,0" Grid.Column="1" Width="170" Canvas.Left="10" Canvas.Top="10"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                
-                <ListView.ItemsPanel>
+                    <ListView.Resources>
+                        <ContextMenu x:Key="ChoiceContextMeu">
+                            <MenuItem Header="Edit" Click="MenuItem_Click"></MenuItem>
+                            <MenuItem Header="Delete" Click="MenuItem_Click_1"></MenuItem>
+
+                        </ContextMenu>
+                        
+                    </ListView.Resources>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListViewItem}">
+                            <Setter Property="ContextMenu" Value="{StaticResource ChoiceContextMeu}"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel Orientation="Vertical" />
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderBrush="Transparent" Height="35">
-
+                            <Border BorderBrush="Transparent" Height="35" Width="170" CornerRadius="15">
                                 <TextBlock TextWrapping="Wrap"
                                        FontSize="8"
                                        VerticalAlignment="Center"

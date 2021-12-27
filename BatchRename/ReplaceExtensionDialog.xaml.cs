@@ -47,7 +47,7 @@ namespace BatchRename
             }
             if (NewRuleReceived != null)
             {
-                NewRuleReceived("ReplaceExtension", NewString.Text);
+                NewRuleReceived("replaceextension", NewString.Text);
             }
             this.DialogResult = true;
             this.Close();
