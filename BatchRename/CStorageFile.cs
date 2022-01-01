@@ -13,6 +13,8 @@ namespace BatchRename
         public string NewName { get; set; }
         public string Path { get; set; }
         public string Error { get; set; }
+
+        public string Type { get; set; }//1: file, 2: folder
         public CStorageFile(string name, string newname, string path, string err)
         {
             this.Name = name;
@@ -23,6 +25,25 @@ namespace BatchRename
 
         public CStorageFile()
         {
+        }
+
+        public void putFolderExtension()
+        {
+            if (this.Type == "Folder")
+            {
+                this.NewName = this.NewName + ".folder";
+            }     
+        }
+        public void removeFolderExtension()
+        {
+            if (this.Type == "Folder")
+            {
+                int id = this.NewName.LastIndexOf(".folder");
+                if (id != -1)
+                {
+                    this.NewName = this.NewName.Substring(0, id);
+                }
+            }
         }
 
         public override string ToString()

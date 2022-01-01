@@ -23,7 +23,7 @@ namespace AddSuffixRule
 
             if (string.IsNullOrEmpty(result)) return original;
             int id = result.LastIndexOf('.');
-            if (id == -1) return original;
+            if (id == -1) return $"{result}{Suffix}";
 
             string ex = result.Substring(id, result.Length - id);
             result = result.Substring(0, id);
@@ -43,6 +43,11 @@ namespace AddSuffixRule
         public IRenameRule Clone(List<string> data)
         {
             return new CAddSuffixRule(data[0]);
+        }
+
+        public string toString()
+        {
+            return $"{Key} {Suffix} decript: {Description}";
         }
     }
 }

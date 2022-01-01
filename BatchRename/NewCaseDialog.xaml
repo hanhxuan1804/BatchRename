@@ -5,13 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BatchRename"
         mc:Ignorable="d"
+        Loaded="Window_Loaded"
         Title="NewCaseDialog" Height="250" Width="275">
-    <Canvas Height="195" VerticalAlignment="Top" Margin="0,0,525,0">
-        <Label Content="THAY ĐỔI KIỂU CHỮ" FontSize="16" Height="42" Width="155" Canvas.Left="71" Canvas.Top="10" RenderTransformOrigin="0.332,1.373"/>
-        <Button Content="Cancel" IsCancel="True" Canvas.Left="53" Canvas.Top="180" Width="75" Name="CancelButton" RenderTransformOrigin="0.987,-3.906"/>
-        <Button Content="OK" Canvas.Left="148" Canvas.Top="180" Width="75" Name="OkButton" Click="OkButton_Click"/>
-        <CheckBox Name="cbLowerCase" Content="Tất cả chuyển sang chữ thường" Canvas.Left="45" Canvas.Top="75"/>
-        <CheckBox Name="cbRemoveSpace" Content="Xóa tất cả khoảng trắng" Canvas.Left="45" Canvas.Top="110"/>
-        <CheckBox Name="cbPascalCase" Content="Chuyển về dạng PascalCase" Canvas.Left="45" Canvas.Top="145"/>
-    </Canvas>
+    <StackPanel Height="195" Width="275" VerticalAlignment="Top" Orientation="Vertical">
+        <Label Content="THAY ĐỔI KIỂU CHỮ" FontSize="16" Height="42" Width="155" RenderTransformOrigin="0.332,1.373"/>
+        
+        <CheckBox Name="cbLowerCase" Content="Tất cả chuyển sang chữ thường"  Margin="20,10,10,10" />
+        <CheckBox Name="cbRemoveSpace" Content="Xóa tất cả khoảng trắng" Margin="20,10,10,10"  />
+        <CheckBox Name="cbPascalCase" Content="Chuyển về dạng PascalCase" Margin="20,10,10,10"  />
+        <Canvas Height="100">
+        <Button Content="Cancel" IsCancel="True" Canvas.Left="53" Canvas.Top="20" Width="75" Name="CancelButton" RenderTransformOrigin="0.987,-3.906"/>
+        <Button Content="OK" Canvas.Left="148" Canvas.Top="20" Width="75" Name="OkButton" Click="OkButton_Click"/>
+        </Canvas>
+    </StackPanel>
 </Window>

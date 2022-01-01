@@ -33,8 +33,7 @@ namespace BatchRename
                 if (NewString.Text.Contains(item))
                 {
                     MessageBox.Show("Từ thay thế có chứa kí tự không hợp lệ");
-                    this.DialogResult = true;
-                    this.Close();
+                    this.DialogResult = true;                    
                     return;
                 }
             }
@@ -42,7 +41,6 @@ namespace BatchRename
             {
                 MessageBox.Show("Từ thay thế chưa được điền");
                 this.DialogResult = true;
-                this.Close();
                 return;
             }
             if (NewRuleReceived != null)

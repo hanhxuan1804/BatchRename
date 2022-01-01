@@ -36,8 +36,7 @@ namespace AddCounterRule
             result = result.Substring(0, id);
 
             index = start + (index * step);
-            result += index.ToString();//TODO: thêm pading 01,02,...
-            result += ex;
+            result = $"{result}-{index}{ex}";
             return result;
         }
 
@@ -46,6 +45,11 @@ namespace AddCounterRule
             start = int.Parse(data[0]) ;
             step = int.Parse(data[1]);
             return new CAddCounterRule(start, step);
+        }
+
+        public string toString()
+        {
+           return $"{Key} {start} {step} decript: {Description}";
         }
     }
 }

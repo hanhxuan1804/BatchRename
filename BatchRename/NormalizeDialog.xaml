@@ -5,15 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BatchRename"
         mc:Ignorable="d"
-        Title="NormalizeDialog" Height="280" Width="289">
-    <Canvas Height="195" VerticalAlignment="Top" Margin="0,0,525,0">
-        <Label Content="CHUẨN HÓA TÊN" FontSize="16" Height="42" Width="155" Canvas.Left="71" Canvas.Top="10" RenderTransformOrigin="0.332,1.373"/>
-        <Button Content="Cancel" IsCancel="True" Canvas.Left="53" Canvas.Top="180" Width="75" Name="CancelButton" RenderTransformOrigin="0.987,-3.906"/>
-        <Button Content="OK" Canvas.Left="148" Canvas.Top="180" Width="75" Name="OkButton" Click="OkButton_Click"/>
-        <CheckBox Name="cbAddPrefix" Content="Thêm tiền tố" Canvas.Left="45" Canvas.Top="75" Checked="cbAddPrefix_Checked"/>
-        <CheckBox Name="cbAddSuffix" Content="Thêm hậu tố" Canvas.Left="45" Canvas.Top="110" Checked="cbAddSuffix_Checked"/>
-        <CheckBox Name="cbReplacer" Content="Thay đổi ký tự '-', '_', ' ' thành '.'" Canvas.Left="45" Canvas.Top="145"/>
-        <TextBox Name="txtPrefix" Canvas.Left="150" TextWrapping="Wrap" Canvas.Top="75" Width="75" Height="18" Visibility="Hidden"/>
-        <TextBox Name="txtSuffix" Canvas.Left="150" TextWrapping="Wrap" Canvas.Top="110" Width="75" Height="18" Visibility="Hidden"/>
-    </Canvas>
+        Loaded="Window_Loaded"
+        Title="NormalizeDialog" Height="260" Width="289">
+    <StackPanel Height="195" VerticalAlignment="Top">
+        <Label Content="CHUẨN HÓA TÊN" FontSize="16" Height="42" Width="155"  RenderTransformOrigin="0.332,1.373"/>
+        <StackPanel Orientation="Horizontal">
+        <CheckBox Name="cbAddPrefix" Content="Thêm tiền tố" Margin="20,10,10,10" Checked="cbAddPrefix_Checked"/>
+            <TextBox Name="txtPrefix" TextWrapping="Wrap"  Width="75" Height="18" Visibility="Hidden"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+        <CheckBox Name="cbAddSuffix" Content="Thêm hậu tố" Margin="20,10,10,10" Canvas.Top="110" Checked="cbAddSuffix_Checked"/>
+        <TextBox Name="txtSuffix" TextWrapping="Wrap" Width="75" Height="18" Visibility="Hidden"/>
+        </StackPanel>
+        <CheckBox Name="cbReplacer" Content="Thay đổi ký tự '-', '_', ' ' thành '.'" Margin="20,10,10,10"/>
+        <Canvas Height="100">
+            <Button Content="Cancel" IsCancel="True" Canvas.Left="53" Canvas.Top="10" Width="75" Name="CancelButton" RenderTransformOrigin="0.987,-3.906"/>
+            <Button Content="OK" Canvas.Left="148" Canvas.Top="10" Width="75" Name="OkButton" Click="OkButton_Click"/>
+        </Canvas>
+    </StackPanel>
 </Window>

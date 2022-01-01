@@ -22,7 +22,7 @@ namespace AddPrefixRule
 
             if (string.IsNullOrEmpty(result)) return original;
             int id = result.LastIndexOf('.');
-            if (id == -1) return original;
+            if (id == -1) return $"{Prefix}{result}";
 
             string ex = result.Substring(id, result.Length - id);
             result = result.Substring(0, id);
@@ -42,6 +42,11 @@ namespace AddPrefixRule
         public IRenameRule Clone(List<string> data)
         {
             return new CAddPrefixRule(data[0]);
+        }
+
+        public string toString()
+        {
+            return $"{Key} {Prefix} decript: {Description}";
         }
     }
 }

@@ -27,6 +27,8 @@ namespace ReplaceExtensionRule
             if (string.IsNullOrEmpty(result)) return original;
             int index = result.LastIndexOf('.');
             if (index == -1) return original;
+            string ex = result.Substring(index, result.Length - index);
+            if (ex == ".folder") return original;
             result = result.Substring(0, index + 1);
             result += Replacer;
             return result;
@@ -44,5 +46,9 @@ namespace ReplaceExtensionRule
             return result;
         }
 
+        public string toString()
+        {
+            return $"{Key} {Replacer} decript: {Description}";
+        }
     }
 }

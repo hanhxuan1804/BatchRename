@@ -51,11 +51,32 @@ namespace BatchRename
                 }
                 if (cbReplacer.IsChecked == true)
                 {
-                    NewRuleReceived("replacer", "");
+                    NewRuleReceived("replaceletter", "");
                 }
             }
             this.DialogResult = true;
             this.Close();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+
+            if (MainWindow.NormalShower[0] == 0)
+            {
+                cbAddPrefix.Visibility = Visibility.Collapsed;
+
+            }
+            if (MainWindow.NormalShower[1] == 0)
+            {
+
+                cbAddSuffix.Visibility = Visibility.Collapsed;
+
+            }
+            if (MainWindow.NormalShower[2] == 0)
+            {
+
+                cbReplacer.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

@@ -44,5 +44,16 @@ namespace ReplaceLetterRule
            data.RemoveAt(data.Count - 1);
            return new CReplceLetterRule(data, replacer);
         }
+
+        public string toString()
+        {
+            string data = "";
+            foreach (var needle in Needles)
+            {
+                data += needle;
+                data += " ";
+            }
+            return $"{Key} {data}{Replacer} decript: {Description}";
+        }
     }
 }

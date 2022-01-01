@@ -63,5 +63,10 @@ namespace ParcalCaseRule
         {
             return new CParcalCaseRule();
         }
+
+        public string toString()
+        {
+            return $"{Key} decript: {Description}";
+        }
     }
 }

@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <None Remove="Images\add.png" />
+    <None Remove="Images\addfolder.png" />
     <None Remove="Images\clearAll.png" />
     <None Remove="Images\counter.png" />
     <None Remove="Images\newcase.png" />
@@ -29,6 +30,7 @@
 
   <ItemGroup>
     <Resource Include="Images\add.png" />
+    <Resource Include="Images\addfolder.png" />
     <Resource Include="Images\clearAll.png" />
     <Resource Include="Images\counter.png" />
     <Resource Include="Images\newcase.png" />

@@ -34,5 +34,10 @@ namespace RemoveSpaceRule
         {
            return new CRemoveSpaceRule();
         }
+
+        public string toString()
+        {
+            return $"{Key} decript: {Description}";
+        }
     }
 }

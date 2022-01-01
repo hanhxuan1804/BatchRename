@@ -19,9 +19,12 @@ namespace BatchRename
     /// </summary>
     public partial class NewCaseDialog : Window
     {
+        
+        
         public NewCaseDialog()
         {
             InitializeComponent();
+         
         }
 
         public delegate void AddRule(string methodName);
@@ -33,7 +36,7 @@ namespace BatchRename
             {
                 if(cbLowerCase.IsChecked == true)
                 {
-                    NewRuleReceived("lowercase");
+                    NewRuleReceived("tolower");
                 }
                 if (cbRemoveSpace.IsChecked == true)
                 {
@@ -41,11 +44,31 @@ namespace BatchRename
                 }
                 if(cbPascalCase.IsChecked == true)
                 {
-                    NewRuleReceived("pascalcase");
+                    NewRuleReceived("parcalcase");
                 }
             }
             this.DialogResult = true;
             this.Close();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (MainWindow.NewCaseShower[0] == 0)
+            {
+                cbLowerCase.Visibility = Visibility.Collapsed;
+            
+            }
+            if (MainWindow.NewCaseShower[1] == 0)
+            {
+         
+                cbRemoveSpace.Visibility = Visibility.Collapsed;
+     
+            }
+            if (MainWindow.NewCaseShower[2] == 0)
+            {
+               
+                cbPascalCase.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

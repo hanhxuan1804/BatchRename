@@ -12,5 +12,6 @@ namespace IRenameRules
         string Rename(string original, int index);
 
         public IRenameRule Clone(List<string> data);
+        public string toString();
     }
 }

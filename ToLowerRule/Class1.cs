@@ -28,5 +28,11 @@ namespace ToLowerRule
         {
             return new CToLowerRule();
         }
+
+        public string toString()
+        {
+
+            return $"{Key} decript: {Description}";
+        }
     }
 }
