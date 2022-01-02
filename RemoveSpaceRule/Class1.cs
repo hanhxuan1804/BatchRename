@@ -21,8 +21,12 @@ namespace RemoveSpaceRule
         {
             string result = original;
             if (string.IsNullOrEmpty(result)) return original;
-            result = result.Replace(" ", string.Empty);
-            return result;
+            int id = result.LastIndexOf('.');
+            if (id != -1) return original.Trim();
+            string ex= result.Substring(id + 1);
+            result = result.Substring(0, id).Trim();
+            
+            return $"{result}{ex}";
         }
 
         public string Rename(string original, int index)

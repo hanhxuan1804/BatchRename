@@ -7,9 +7,15 @@
         xmlns:local="clr-namespace:BatchRename"
         xmlns:Fluent="clr-namespace:Fluent;assembly=Fluent"
         mc:Ignorable="d"
+        SourceInitialized="RibbonWindow_SourceInitialized"
         Loaded="RibbonWindow_Loaded"
         Closing="RibbonWindow_Closing"
+        x:Name="mainwindow"
         Title="MainWindow" Height="450" Width="800">
+    <Control.Resources>
+        <local:WidthFourConverter x:Key="widthFourConverter" />
+        <local:HeightConverter x:Key="heightConverter" />
+    </Control.Resources>
     <StackPanel>
         <Fluent:Ribbon>
             <Fluent:Ribbon.Menu>
@@ -116,20 +122,25 @@
         </Fluent:Ribbon>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="600"></ColumnDefinition>
-                <ColumnDefinition Width="200"></ColumnDefinition>
+                <ColumnDefinition Width="5.5*"></ColumnDefinition>
+                <ColumnDefinition Width="2.5*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <ListView x:Name="listFiles" Height="auto"  Background="Transparent"  VerticalAlignment="Top"
+            <ListView x:Name="listFiles" Height="{Binding ElementName=mainwindow, Path=ActualHeight, Converter={StaticResource heightConverter}}"  Background="Transparent"
+                      DragEnter="listFiles_DragEnter" Drop="listFiles_Drop"  AllowDrop="True"
+                      VerticalAlignment="Top"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      HorizontalAlignment="Stretch"
+                      
                       Grid.Column="0">
 
                 <ListView.View >
                     <GridView>
-                        <GridViewColumn Header="Name" Width="150" DisplayMemberBinding="{Binding Name}"></GridViewColumn>
-                        <GridViewColumn Header="New Name" Width="150" DisplayMemberBinding="{Binding NewName}"></GridViewColumn>
-                        <GridViewColumn Header="Path" Width="150" DisplayMemberBinding="{Binding Path}"></GridViewColumn>
-                        <GridViewColumn Header="Type" Width="150" DisplayMemberBinding="{Binding Type}"></GridViewColumn>
+                        <GridViewColumn Header="Name" Width="{Binding ElementName=listFiles, Path=ActualWidth, Converter={StaticResource widthFourConverter}}" DisplayMemberBinding="{Binding Name}"> </GridViewColumn>
+                        <GridViewColumn Header="New Name" Width="{Binding ElementName=listFiles, Path=ActualWidth, Converter={StaticResource widthFourConverter}}" DisplayMemberBinding="{Binding NewName}"></GridViewColumn>
+                        <GridViewColumn Header="Type" Width="{Binding ElementName=listFiles, Path=ActualWidth, Converter={StaticResource widthFourConverter}}" DisplayMemberBinding="{Binding Type}"></GridViewColumn>
+                        <GridViewColumn Header="Path" Width="{Binding ElementName=listFiles, Path=ActualWidth, Converter={StaticResource widthFourConverter}}" DisplayMemberBinding="{Binding Path}"></GridViewColumn>
+
                     </GridView>
                 </ListView.View>
                 <ListView.Resources>
@@ -155,8 +166,11 @@
                 </ListView.ItemsPanel>
             </ListView>
 
-            <Canvas Grid.Column="1" Height="300">
-                <ListView Name="listChoice" Background="Transparent" Height="180" Margin="5,10,0,0" Grid.Column="1" Width="170" Canvas.Left="15" Canvas.Top="31"
+            <StackPanel Grid.Column="1" Height="300">
+                <Border BorderBrush="{x:Null}" Margin="5,10,0,0" Width="{Binding ElementName=mainwindow, Path=ActualWidth, Converter={StaticResource widthFourConverter}}">
+                    <TextBlock Text="RULE LIST" FontWeight="Black" Foreground="Blue" HorizontalAlignment="Center"  FontSize="20" Canvas.Left="56" Height="36"  Canvas.Top="5"/>
+                </Border>
+                <ListView Name="listChoice" Background="Transparent" Height="180" Margin="5,10,0,0" Grid.Column="1" Width="{Binding ElementName=mainwindow, Path=ActualWidth, Converter={StaticResource widthFourConverter}}" Canvas.Left="15" Canvas.Top="31"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListView.Resources>
                         <ContextMenu x:Key="ChoiceContextMeu">
@@ -178,7 +192,7 @@
                     </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderBrush="Transparent" Height="35" Width="170" CornerRadius="15">
+                            <Border BorderBrush="Transparent" Height="35" Width="{Binding ElementName=mainwindow, Path=ActualWidth, Converter={StaticResource widthFourConverter}}" CornerRadius="15">
                                 <TextBlock TextWrapping="Wrap"
                                        FontSize="8"
                                        VerticalAlignment="Center"
@@ -192,7 +206,48 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <ToggleButton Name="btnSaveRules" Click="btnSaveRules_Click" Margin="0 15 0 15" Canvas.Top="220" Canvas.Left="120">
+                <Canvas HorizontalAlignment="Center"  Width="250"> 
+                    <ToggleButton Name="btnClearRules" Click="btnClearRules_Click"  Margin="0 15 0 15" Canvas.Top="5" Canvas.Left="70">
+                    <ToggleButton.Style>
+                        <Style TargetType="{x:Type ToggleButton}">
+                            <Setter Property="Foreground" Value="White"></Setter>
+                            <Setter Property="Background" Value="#FFE25E05"></Setter>
+                            <Setter Property="Content" Value="  Clear  "></Setter>
+                            <Setter Property="FontSize" Value="15"></Setter>
+                            <Setter Property="FontWeight" Value="Bold"></Setter>
+                            <Setter Property="ToggleButton.Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect Color="Gray" Direction="270" ShadowDepth="2" BlurRadius="5" Opacity="0.3" />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                                            Background="{TemplateBinding Background}">
+                                            <ContentPresenter HorizontalAlignment="Center"                  
+                                              VerticalAlignment="Center"/>
+
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="White"></Setter>
+                                    <Setter Property="Background" Value="#8B0000"/>
+                                    <Setter Property="BorderThickness" Value="1,1,2,2"></Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ToggleButton.Style>
+                    <ToggleButton.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </ToggleButton.Resources>
+                </ToggleButton>
+                    <ToggleButton Name="btnSaveRules" Click="btnSaveRules_Click" Margin="0 15 0 15" Canvas.Top="5" Canvas.Left="150">
                     <ToggleButton.Style>
                         <Style TargetType="{x:Type ToggleButton}">
                             <Setter Property="Foreground" Value="White"></Setter>
@@ -232,7 +287,7 @@
                         </Style>
                     </ToggleButton.Resources>
                 </ToggleButton>
-                <ToggleButton Name="btnConfirm" Click="btnConfirm_Click" Margin="0 15 0 15" Canvas.Top="250" Canvas.Left="70">
+                    <ToggleButton Name="btnConfirm" Click="btnConfirm_Click" Margin="0 15 0 15" Canvas.Top="35" Canvas.Left="100">
                     <ToggleButton.Style>
                         <Style TargetType="{x:Type ToggleButton}">
                             <Setter Property="Foreground" Value="White"></Setter>
@@ -272,11 +327,11 @@
                         </Style>
                     </ToggleButton.Resources>
                 </ToggleButton>
-                <TextBlock Text="RULE LIST" FontWeight="Black" Foreground="Blue"  FontSize="20" Canvas.Left="56" Height="36" Width="118" Canvas.Top="5"/>
+                </Canvas>
+                
 
-            </Canvas>
+            </StackPanel>
         </Grid>
-        <Label Content="Label"/>
 
     </StackPanel>
 </Fluent:RibbonWindow>

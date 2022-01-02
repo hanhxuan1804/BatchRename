@@ -22,23 +22,25 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using Aspose.Cells;
 
-//TODO: save list rule
+//TODO: Regex
 
 namespace BatchRename
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-   
+
     public partial class MainWindow : RibbonWindow
     {
-        BindingList<CStorageFile> list = new BindingList<CStorageFile>();//list file load by user
-        BindingList<IRenameRule> rules = new BindingList<IRenameRule>();//list rule choice by user
-        BindingList<CListRules> combo = new BindingList<CListRules>();//list combo rules save
+        BindingList<CStorageFile> list = new BindingList<CStorageFile>();   //list file load by user
+        BindingList<IRenameRule> rules = new BindingList<IRenameRule>();    //list rule choice by user
+        BindingList<CListRules> combo = new BindingList<CListRules>();      //list combo rules save
         public MainWindow()
         {
             InitializeComponent();
+
         }
 
         List<IRenameRule> _prototypes; // Prototype
@@ -76,7 +78,7 @@ namespace BatchRename
             loadComboRule();
         }
 
-        
+
         public static int[] NewCaseShower = { 1, 1, 1 };
         public static int[] NormalShower = { 1, 1, 1 };
         /*Hàm này kiểm tra xem các rule có từ dll đã load được chưa
@@ -157,8 +159,8 @@ namespace BatchRename
                     for (int i = 0; i < count; i++)
                     {
                         string lineRule = reader.ReadLine();
-                        
-                        if (lineRule == null) return; 
+
+                        if (lineRule == null) return;
                         string[] vs = lineRule.Split(" decript: ");
                         if (vs.Length < 2) return;
                         string[] words = vs[0].Split(' ');
@@ -336,7 +338,7 @@ namespace BatchRename
                         break;
                     case "removespace":
                         rule = result.Clone(new List<string>());
-                        rule.Description = "Xóa tất cả khoảng trắng";
+                        rule.Description = "Xóa tất cả khoảng trắng ở đầu và cuối";
                         rules.Add(rule);
                         break;
                     case "parcalcase":
@@ -520,7 +522,7 @@ namespace BatchRename
         private void btnAddFolder_Click(object sender, RoutedEventArgs e)
         {
             int index = list.Count;// biến giữ số file hiện tại trong danh sách
-            FolderBrowserDialog openFolderDialog = new FolderBrowserDialog();     
+            FolderBrowserDialog openFolderDialog = new FolderBrowserDialog();
             openFolderDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             DialogResult result = openFolderDialog.ShowDialog();
 
@@ -613,6 +615,19 @@ namespace BatchRename
                     }
                 }
             }
+            //write vào file exels
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Workbook wb = new Workbook("WindowState.xlsx");
+            Worksheet sheet = wb.Worksheets[0];
+
+            sheet.Cells["B1"].Value = this.Height;
+            sheet.Cells["B2"].Value = this.Width;
+            sheet.Cells["B3"].Value = this.Top;
+            sheet.Cells["B4"].Value = this.Left;
+            sheet.Cells["B5"].Value = this.WindowState.ToString();
+            //Save the Excel file.
+            wb.Save("WindowState.xlsx", SaveFormat.Xlsx);
+
         }
 
         private void ListViewItem_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -624,7 +639,7 @@ namespace BatchRename
                 if (a != null)
                 {
                     var result = MessageBox.Show("Bạn có muốn xóa hết những luật trước đó?", "Thêm bộ các luật!", MessageBoxButton.YesNoCancel);
-                    if(result == MessageBoxResult.Yes)
+                    if (result == MessageBoxResult.Yes)
                     {
                         rules.Clear();
                         foreach (var rule in a.Rules)
@@ -632,7 +647,7 @@ namespace BatchRename
                             rules.Add(rule);
                         }
                     }
-                    else if(result == MessageBoxResult.No)
+                    else if (result == MessageBoxResult.No)
                     {
                         foreach (var rule in a.Rules)
                         {
@@ -643,7 +658,7 @@ namespace BatchRename
                     {
                         return;
                     }
-                   
+
                 }
             }
         }
@@ -652,11 +667,70 @@ namespace BatchRename
         private void MenuItem_Click_2(object sender, RoutedEventArgs e)
         {
             int id = listCombo.SelectedIndex;
-            if (id <0||id>=combo.Count)
+            if (id < 0 || id >= combo.Count)
             {
-                return ;
+                return;
             }
             combo.RemoveAt(id);
         }
+
+        /*Drag and drop file*/
+        private void listFiles_DragEnter(object sender, System.Windows.DragEventArgs e)
+        {
+            if (!e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop) ||
+            sender == e.Source)
+            {
+                e.Effects = System.Windows.DragDropEffects.None;
+            }
+        }
+
+        private void listFiles_Drop(object sender, System.Windows.DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
+            {
+                var files = e.Data.GetData(System.Windows.DataFormats.FileDrop) as string[];
+                foreach (var file in files)
+                {
+                    CStorageFile f = new CStorageFile();
+                    f.Name = System.IO.Path.GetFileName(file);
+                    f.NewName = f.Name;
+                    f.Path = file;
+                    f.Type = "File";
+                    if (!list.Any(item => item.Path == f.Path))
+                    {
+                        list.Add(f);
+                    }
+                }
+            }
+        }
+
+        private void RibbonWindow_SourceInitialized(object sender, EventArgs e)
+        {
+
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Workbook wb = new Workbook("WindowState.xlsx");
+            Worksheet sheet = wb.Worksheets[0];
+            if(sheet != null)
+            {
+                if(sheet.Cells["B5"].Value.ToString() == "Maximized")
+                {
+                    this.WindowState = WindowState.Maximized;
+                }
+                else
+                {
+                    this.Height = double.Parse(sheet.Cells["B1"].Value.ToString());
+                    this.Width = double.Parse(sheet.Cells["B2"].Value.ToString());
+                    this.Top = double.Parse(sheet.Cells["B3"].Value.ToString());
+                    this.Left = double.Parse(sheet.Cells["B4"].Value.ToString());
+                }
+                
+            }
+        }
+
+        private void btnClearRules_Click(object sender, RoutedEventArgs e)
+        {
+            rules.Clear();
+        }
     }
 }
+
