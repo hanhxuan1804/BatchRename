@@ -12,6 +12,7 @@
     <None Remove="Images\addfolder.png" />
     <None Remove="Images\clearAll.png" />
     <None Remove="Images\counter.png" />
+    <None Remove="Images\grouprule.png" />
     <None Remove="Images\newcase.png" />
     <None Remove="Images\normalize.png" />
     <None Remove="Images\random.png" />
@@ -35,6 +36,7 @@
     <Resource Include="Images\counter.png" />
     <Resource Include="Images\newcase.png" />
     <Resource Include="Images\normalize.png" />
+    <Resource Include="Images\grouprule.png" />
     <Resource Include="Images\random.png" />
     <Resource Include="Images\remove.png" />
     <Resource Include="Images\replace.png" />

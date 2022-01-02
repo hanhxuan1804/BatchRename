@@ -15,30 +15,22 @@ using System.Windows.Shapes;
 namespace BatchRename
 {
     /// <summary>
-    /// Interaction logic for AddCounterDialog.xaml
+    /// Interaction logic for WindowSetNameCombo.xaml
     /// </summary>
-    public partial class AddCounterDialog : Window
+    public partial class WindowSetNameCombo : Window
     {
-        
-        public delegate void AddRule(string methodName, int start, int step);
-        public event AddRule NewRuleReceived = null;
-        public AddCounterDialog()
+        public WindowSetNameCombo()
         {
             InitializeComponent();
         }
-
+        public delegate void AddRule(string Name);
+        public event AddRule NewRuleReceived = null;
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            
-            if (txtStart.Text == "" || txtStep.Text == "")
-            {
-                MessageBox.Show("Thông tin chưa được điền");
-                this.DialogResult = false;
-                return;
-            }
+
             if (NewRuleReceived != null)
             {
-                NewRuleReceived("addcounter", int.Parse(txtStart.Text), int.Parse(txtStep.Text));
+                    NewRuleReceived(txtName.Text);
             }
             this.DialogResult = true;
             this.Close();

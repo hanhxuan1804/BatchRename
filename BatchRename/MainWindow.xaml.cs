@@ -48,6 +48,7 @@ namespace BatchRename
 
             listFiles.ItemsSource = list;
             listChoice.ItemsSource = rules;
+            listCombo.ItemsSource = combo;
             _prototypes = new List<IRenameRule>();
 
             // Nạp danh sách các tập tin dll
@@ -150,9 +151,9 @@ namespace BatchRename
                     one.Rules = new List<IRenameRule>();
                     string line = reader.ReadLine();
                     if (line == null) return;
-                    if (line.Split(' ').Length < 2) return;
-                    one.Name = line.Split(' ')[0];
-                    int count = int.Parse(line.Split(' ')[1]);
+                    if (line.Split(" count: ").Length < 2) return;
+                    one.Name = line.Split(" count: ")[0];
+                    int count = int.Parse(line.Split(" count: ")[1]);
                     for (int i = 0; i < count; i++)
                     {
                         string lineRule = reader.ReadLine();
@@ -586,9 +587,16 @@ namespace BatchRename
         {
             if (rules.Count == 0) return;
             CListRules one = new CListRules();
-            one.Name = "";//TODO: dialog to get name
-            one.Rules = rules.ToList();
-            combo.Add(one);
+            WindowSetNameCombo screen = new WindowSetNameCombo();
+            screen.NewRuleReceived += (name) =>
+            {
+                one.Name = name;
+            };
+            if (screen.ShowDialog() == true)
+            {
+                one.Rules = rules.ToList();
+                combo.Add(one);
+            };
         }
 
         private void RibbonWindow_Closing(object sender, CancelEventArgs e)
@@ -598,13 +606,57 @@ namespace BatchRename
             {
                 foreach (var co in combo)
                 {
-                    writer.WriteLine($"{co.Name} {co.Rules.Count}");
+                    writer.WriteLine($"{co.Name} count: {co.Rules.Count}");
                     foreach (var rule in co.Rules)
                     {
                         writer.WriteLine(rule.toString());
                     }
                 }
             }
+        }
+
+        private void ListViewItem_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var item = sender as System.Windows.Controls.ListViewItem;
+            if (item != null && item.IsSelected)
+            {
+                CListRules a = item.DataContext as CListRules;
+                if (a != null)
+                {
+                    var result = MessageBox.Show("Bạn có muốn xóa hết những luật trước đó?", "Thêm bộ các luật!", MessageBoxButton.YesNoCancel);
+                    if(result == MessageBoxResult.Yes)
+                    {
+                        rules.Clear();
+                        foreach (var rule in a.Rules)
+                        {
+                            rules.Add(rule);
+                        }
+                    }
+                    else if(result == MessageBoxResult.No)
+                    {
+                        foreach (var rule in a.Rules)
+                        {
+                            rules.Add(rule);
+                        }
+                    }
+                    else
+                    {
+                        return;
+                    }
+                   
+                }
+            }
+        }
+
+        //delete combo click
+        private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+        {
+            int id = listCombo.SelectedIndex;
+            if (id <0||id>=combo.Count)
+            {
+                return ;
+            }
+            combo.RemoveAt(id);
         }
     }
 }
