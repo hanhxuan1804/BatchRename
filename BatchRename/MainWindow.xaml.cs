@@ -43,6 +43,29 @@ namespace BatchRename
 
         }
 
+        private void RibbonWindow_SourceInitialized(object sender, EventArgs e)
+        {
+
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Workbook wb = new Workbook("WindowState.xlsx");
+            Worksheet sheet = wb.Worksheets[0];
+            if (sheet != null)
+            {
+                if (sheet.Cells["B5"].Value.ToString() == "Maximized")
+                {
+                    this.WindowState = WindowState.Maximized;
+                }
+                else
+                {
+                    this.Height = double.Parse(sheet.Cells["B1"].Value.ToString());
+                    this.Width = double.Parse(sheet.Cells["B2"].Value.ToString());
+                    this.Top = double.Parse(sheet.Cells["B3"].Value.ToString());
+                    this.Left = double.Parse(sheet.Cells["B4"].Value.ToString());
+                }
+
+            }
+        }
+
         List<IRenameRule> _prototypes; // Prototype
 
         private void RibbonWindow_Loaded(object sender, RoutedEventArgs e)
@@ -76,6 +99,48 @@ namespace BatchRename
             }
             loadToolShower();
             loadComboRule();
+            if (combo.Last().Name == "recent")
+            {
+                foreach (var rule in combo.Last().Rules)
+                {
+                    rules.Add(rule);
+                }
+                combo.RemoveAt(combo.Count - 1);
+            }
+        }
+
+        private void RibbonWindow_Closed(object sender, EventArgs e)
+        {
+
+            //thêm combo hiện tại để mở lại lần sau
+            CListRules rec = new CListRules();
+            rec.Name = "recent";
+            rec.Rules = rules.ToList();
+            combo.Add(rec);
+            //write combo vào file để sử dụng lần sau
+            using (var writer = new StreamWriter("recentrules.txt"))
+            {
+                foreach (var co in combo)
+                {
+                    writer.WriteLine($"{co.Name} count: {co.Rules.Count}");
+                    foreach (var rule in co.Rules)
+                    {
+                        writer.WriteLine(rule.toString());
+                    }
+                }
+            }
+            //write vào file exels
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Workbook wb = new Workbook("WindowState.xlsx");
+            Worksheet sheet = wb.Worksheets[0];
+
+            sheet.Cells["B1"].Value = this.Height;
+            sheet.Cells["B2"].Value = this.Width;
+            sheet.Cells["B3"].Value = this.Top;
+            sheet.Cells["B4"].Value = this.Left;
+            sheet.Cells["B5"].Value = this.WindowState.ToString();
+            //Save the Excel file.
+            wb.Save("WindowState.xlsx", SaveFormat.Xlsx);
         }
 
 
@@ -176,6 +241,8 @@ namespace BatchRename
                 reader.Close();
             }
         }
+
+        /*Xử lý I/O file*/
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             int index = list.Count;// biến giữ số file hiện tại trong danh sách
@@ -214,7 +281,6 @@ namespace BatchRename
                 }
             }
         }
-
         private void btnRemove_Click(object sender, RoutedEventArgs e)
         {
             int index = listFiles.SelectedIndex;
@@ -228,7 +294,6 @@ namespace BatchRename
             }
             list.RemoveAt(index);
         }
-
         private void btnClearAll_Click(object sender, RoutedEventArgs e)
         {
             for (int i = 0; i < list.Count; i++)
@@ -241,35 +306,74 @@ namespace BatchRename
             }
         }
 
-        private void btnConfirm_Click(object sender, RoutedEventArgs e)
+        /*Xử lý I/O folder*/
+        private void btnAddFolder_Click(object sender, RoutedEventArgs e)
+        {
+            int index = list.Count;// biến giữ số file hiện tại trong danh sách
+            FolderBrowserDialog openFolderDialog = new FolderBrowserDialog();
+            openFolderDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            DialogResult result = openFolderDialog.ShowDialog();
+
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                CStorageFile f = new CStorageFile();
+
+                f.Path = openFolderDialog.SelectedPath;
+                f.Name = Path.GetFileName(f.Path);
+                f.NewName = f.Name;
+                f.Type = "Folder";
+                if (!list.Any(item => item.Path == f.Path))
+                {
+                    list.Add(f);
+                }
+            }
+
+            if (rules.Count > 0 && index != list.Count)
+            {
+                MessageBoxResult choice = System.Windows.MessageBox.Show("Bạn có muốn áp dụng các quy tắt đã chọn trước đó?", "Thông báo", MessageBoxButton.YesNo);
+                if (choice == MessageBoxResult.Yes)
+                {
+
+                    for (int i = index; i < list.Count; i++)
+                    {
+                        list[i].putFolderExtension();
+                        for (int j = 0; j < rules.Count; j++)
+                        {
+
+                            list[i].NewName = rules[j].Rename(list[i].NewName);
+                            list[i].NewName = rules[j].Rename(list[i].NewName, i);
+                        }
+                        list[i].removeFolderExtension();
+                    }
+                }
+            }
+        }
+        private void btnRemoveFolder_Click(object sender, RoutedEventArgs e)
+        {
+            int index = listFiles.SelectedIndex;
+            if (index < 0 || index > list.Count)
+            {
+                return;
+            }
+            if (list[index].Type == "File")
+            {
+                return;
+            }
+            list.RemoveAt(index);
+        }
+        private void btnClearAllFolder_Click(object sender, RoutedEventArgs e)
         {
             for (int i = 0; i < list.Count; i++)
             {
-                if (list[i].Type == "File")
+                if (list[i].Type == "Folder")
                 {
-
-                    FileInfo file = new FileInfo(list[i].Path);
-                    if (file.Exists && file != null)
-                    {
-                        file.MoveTo(Path.Combine(file.Directory.FullName, list[i].NewName));
-
-                        list[i].Name = file.Name;
-                        list[i].Path = file.FullName;
-                    }
+                    list.RemoveAt((int)i);
+                    i--;
                 }
-                else
-                {
-                    DirectoryInfo directory = new DirectoryInfo(list[i].Path);
-                    if (directory.Exists && directory != null)
-                    {
-                        directory.MoveTo(Path.Combine(directory.Parent.FullName, list[i].NewName));
-                        list[i].Name = directory.Name;
-                        list[i].Path = directory.FullName;
-                    }
-                }
-
             }
         }
+
+        /*Các nút tương ứng với luật*/
 
         private void btnReplace_Click(object sender, RoutedEventArgs e)
         {
@@ -412,6 +516,39 @@ namespace BatchRename
             };
         }
 
+        public static string GenerateName(int len)
+        {
+            Random r = new Random();
+            string[] consonants = { "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "l", "n", "p", "q", "r", "s", "sh", "zh", "t", "v", "w", "x" };
+            string[] vowels = { "a", "e", "i", "o", "u", "ae", "y" };
+            string Name = "";
+            Name += consonants[r.Next(consonants.Length)];
+            Name += vowels[r.Next(vowels.Length)];
+            int b = 2; //b tells how many times a new letter has been added. It's 2 right now because the first two letters are already in the name.
+            while (b < len)
+            {
+                Name += consonants[r.Next(consonants.Length)];
+                b++;
+                Name += vowels[r.Next(vowels.Length)];
+                b++;
+            }
+
+            return Name;
+        }
+        private void btnRandomName_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                int id = list[i].NewName.LastIndexOf('.');
+                string ex = "";
+                if (id != -1 && list[i].Type == "File")
+                {
+                    ex = list[i].NewName.Substring(id, list[i].NewName.Length - id);
+                }
+
+                list[i].NewName = $"{GenerateName(15)}{ex}";
+            }
+        }
         //List choice edit
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -470,39 +607,7 @@ namespace BatchRename
             rules.RemoveAt(listChoice.SelectedIndex);
             reapplyAllRules();
         }
-        public static string GenerateName(int len)
-        {
-            Random r = new Random();
-            string[] consonants = { "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "l", "n", "p", "q", "r", "s", "sh", "zh", "t", "v", "w", "x" };
-            string[] vowels = { "a", "e", "i", "o", "u", "ae", "y" };
-            string Name = "";
-            Name += consonants[r.Next(consonants.Length)];
-            Name += vowels[r.Next(vowels.Length)];
-            int b = 2; //b tells how many times a new letter has been added. It's 2 right now because the first two letters are already in the name.
-            while (b < len)
-            {
-                Name += consonants[r.Next(consonants.Length)];
-                b++;
-                Name += vowels[r.Next(vowels.Length)];
-                b++;
-            }
 
-            return Name;
-        }
-        private void btnRandomName_Click(object sender, RoutedEventArgs e)
-        {
-            for (int i = 0; i < list.Count; i++)
-            {
-                int id = list[i].NewName.LastIndexOf('.');
-                string ex = "";
-                if (id != -1 && list[i].Type == "File")
-                {
-                    ex = list[i].NewName.Substring(id, list[i].NewName.Length - id);
-                }
-
-                list[i].NewName = $"{GenerateName(15)}{ex}";
-            }
-        }
         public void reapplyAllRules()
         {
             for (int i = 0; i < list.Count; i++)
@@ -519,72 +624,36 @@ namespace BatchRename
             }
         }
 
-        private void btnAddFolder_Click(object sender, RoutedEventArgs e)
-        {
-            int index = list.Count;// biến giữ số file hiện tại trong danh sách
-            FolderBrowserDialog openFolderDialog = new FolderBrowserDialog();
-            openFolderDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            DialogResult result = openFolderDialog.ShowDialog();
-
-            if (result == System.Windows.Forms.DialogResult.OK)
-            {
-                CStorageFile f = new CStorageFile();
-
-                f.Path = openFolderDialog.SelectedPath;
-                f.Name = Path.GetFileName(f.Path);
-                f.NewName = f.Name;
-                f.Type = "Folder";
-                if (!list.Any(item => item.Path == f.Path))
-                {
-                    list.Add(f);
-                }
-            }
-
-            if (rules.Count > 0 && index != list.Count)
-            {
-                MessageBoxResult choice = System.Windows.MessageBox.Show("Bạn có muốn áp dụng các quy tắt đã chọn trước đó?", "Thông báo", MessageBoxButton.YesNo);
-                if (choice == MessageBoxResult.Yes)
-                {
-
-                    for (int i = index; i < list.Count; i++)
-                    {
-                        list[i].putFolderExtension();
-                        for (int j = 0; j < rules.Count; j++)
-                        {
-
-                            list[i].NewName = rules[j].Rename(list[i].NewName);
-                            list[i].NewName = rules[j].Rename(list[i].NewName, i);
-                        }
-                        list[i].removeFolderExtension();
-                    }
-                }
-            }
-        }
-        private void btnRemoveFolder_Click(object sender, RoutedEventArgs e)
-        {
-            int index = listFiles.SelectedIndex;
-            if (index < 0 || index > list.Count)
-            {
-                return;
-            }
-            if (list[index].Type == "File")
-            {
-                return;
-            }
-            list.RemoveAt(index);
-        }
-        private void btnClearAllFolder_Click(object sender, RoutedEventArgs e)
+        /*Các nút trên phía dưới màn hình*/
+        private void btnConfirm_Click(object sender, RoutedEventArgs e)
         {
             for (int i = 0; i < list.Count; i++)
             {
-                if (list[i].Type == "Folder")
+                if (list[i].Type == "File")
                 {
-                    list.RemoveAt((int)i);
-                    i--;
+
+                    FileInfo file = new FileInfo(list[i].Path);
+                    if (file.Exists && file != null)
+                    {
+                        file.MoveTo(Path.Combine(file.Directory.FullName, list[i].NewName));
+
+                        list[i].Name = file.Name;
+                        list[i].Path = file.FullName;
+                    }
                 }
+                else
+                {
+                    DirectoryInfo directory = new DirectoryInfo(list[i].Path);
+                    if (directory.Exists && directory != null)
+                    {
+                        directory.MoveTo(Path.Combine(directory.Parent.FullName, list[i].NewName));
+                        list[i].Name = directory.Name;
+                        list[i].Path = directory.FullName;
+                    }
+                }
+
             }
         }
-
         private void btnSaveRules_Click(object sender, RoutedEventArgs e)
         {
             if (rules.Count == 0) return;
@@ -600,36 +669,12 @@ namespace BatchRename
                 combo.Add(one);
             };
         }
-
-        private void RibbonWindow_Closing(object sender, CancelEventArgs e)
+        private void btnClearRules_Click(object sender, RoutedEventArgs e)
         {
-            //write combo vào file để sử dụng lần sau
-            using (var writer = new StreamWriter("recentrules.txt"))
-            {
-                foreach (var co in combo)
-                {
-                    writer.WriteLine($"{co.Name} count: {co.Rules.Count}");
-                    foreach (var rule in co.Rules)
-                    {
-                        writer.WriteLine(rule.toString());
-                    }
-                }
-            }
-            //write vào file exels
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            Workbook wb = new Workbook("WindowState.xlsx");
-            Worksheet sheet = wb.Worksheets[0];
-
-            sheet.Cells["B1"].Value = this.Height;
-            sheet.Cells["B2"].Value = this.Width;
-            sheet.Cells["B3"].Value = this.Top;
-            sheet.Cells["B4"].Value = this.Left;
-            sheet.Cells["B5"].Value = this.WindowState.ToString();
-            //Save the Excel file.
-            wb.Save("WindowState.xlsx", SaveFormat.Xlsx);
-
+            rules.Clear();
         }
 
+        //Click thêm bộ luật đã lưu vào luật hiện tại
         private void ListViewItem_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var item = sender as System.Windows.Controls.ListViewItem;
@@ -663,7 +708,7 @@ namespace BatchRename
             }
         }
 
-        //delete combo click
+        //Xóa bộ luật đã lưu
         private void MenuItem_Click_2(object sender, RoutedEventArgs e)
         {
             int id = listCombo.SelectedIndex;
@@ -704,33 +749,6 @@ namespace BatchRename
             }
         }
 
-        private void RibbonWindow_SourceInitialized(object sender, EventArgs e)
-        {
-
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            Workbook wb = new Workbook("WindowState.xlsx");
-            Worksheet sheet = wb.Worksheets[0];
-            if(sheet != null)
-            {
-                if(sheet.Cells["B5"].Value.ToString() == "Maximized")
-                {
-                    this.WindowState = WindowState.Maximized;
-                }
-                else
-                {
-                    this.Height = double.Parse(sheet.Cells["B1"].Value.ToString());
-                    this.Width = double.Parse(sheet.Cells["B2"].Value.ToString());
-                    this.Top = double.Parse(sheet.Cells["B3"].Value.ToString());
-                    this.Left = double.Parse(sheet.Cells["B4"].Value.ToString());
-                }
-                
-            }
-        }
-
-        private void btnClearRules_Click(object sender, RoutedEventArgs e)
-        {
-            rules.Clear();
-        }
     }
 }
 

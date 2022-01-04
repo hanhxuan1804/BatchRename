@@ -9,9 +9,11 @@
         mc:Ignorable="d"
         SourceInitialized="RibbonWindow_SourceInitialized"
         Loaded="RibbonWindow_Loaded"
-        Closing="RibbonWindow_Closing"
+        Closed="RibbonWindow_Closed"
+        
         x:Name="mainwindow"
-        Title="MainWindow" Height="450" Width="800">
+        Icon="Images/rename.png"
+        Title="Batch Rename" MinHeight="470" MinWidth="500" Width="800">
     <Control.Resources>
         <local:WidthFourConverter x:Key="widthFourConverter" />
         <local:HeightConverter x:Key="heightConverter" />

@@ -5,6 +5,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>1486505375-edit-pen-change-option-pencil-write_81422 (1).ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +18,12 @@
     <None Remove="Images\normalize.png" />
     <None Remove="Images\random.png" />
     <None Remove="Images\remove.png" />
+    <None Remove="Images\rename.png" />
     <None Remove="Images\replace.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="1486505375-edit-pen-change-option-pencil-write_81422 (1).ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +52,7 @@
     <Resource Include="Images\grouprule.png" />
     <Resource Include="Images\random.png" />
     <Resource Include="Images\remove.png" />
+    <Resource Include="Images\rename.png" />
     <Resource Include="Images\replace.png" />
   </ItemGroup>
 
