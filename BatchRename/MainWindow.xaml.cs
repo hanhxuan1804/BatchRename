@@ -99,12 +99,16 @@ namespace BatchRename
             }
             loadToolShower();
             loadComboRule();
-            if (combo.Last().Name == "recent")
+            if (combo.Count > 0 && combo.Last().Name == "recent")
             {
-                foreach (var rule in combo.Last().Rules)
+                if(combo.Last().Rules.Count > 0)
                 {
-                    rules.Add(rule);
+                    foreach (var rule in combo.Last().Rules)
+                    {
+                        rules.Add(rule);
+                    }
                 }
+                
                 combo.RemoveAt(combo.Count - 1);
             }
         }
