@@ -3,16 +3,57 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:BatchRename"
+        xmlns:local="clr-namespace:BatchRename" d:DataContext="{d:DesignInstance Type=local:AddCounterValidationRule}"
         mc:Ignorable="d"
-        Title="AddCounterDialog" Height="212" Width="271">
-    <Canvas Height="195" VerticalAlignment="Top">
+        Title="AddCounterDialog" Height="250" Width="271">
+    <Window.Resources>
+        <ControlTemplate x:Key="validationTemplate">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="1" Text="{Binding ErrorContent}" Foreground="Red"  Width="100" TextWrapping="Wrap"></TextBlock>
+                <AdornedElementPlaceholder Grid.Row="0"></AdornedElementPlaceholder>
+            </Grid>
+        </ControlTemplate>
+        <Style x:Key="textBoxInError" TargetType="{x:Type TextBox}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip"
+                            Value="{Binding RelativeSource={x:Static RelativeSource.Self},Path=(Validation.Errors)[0].ErrorContent}"></Setter>
+
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Canvas Height="234" VerticalAlignment="Center">
         <Label Content="ĐÁNH SỐ THỨ TỰ" FontSize="16" Height="42" Width="142" Canvas.Left="71" Canvas.Top="10" RenderTransformOrigin="0.332,1.373"/>
         <TextBlock Canvas.Left="62" TextWrapping="Wrap" Text="Bắt đầu:" Canvas.Top="71"/>
-        <TextBox Height="17" Canvas.Left="141" TextWrapping="Wrap" Canvas.Top="70" Width="63" Name="txtStart"/>
-        <TextBlock Canvas.Left="62" TextWrapping="Wrap" Text="Bước nhảy:" Canvas.Top="101"/>
-        <TextBox Height="17" Canvas.Left="141" TextWrapping="Wrap" Canvas.Top="100" Width="63" Name="txtStep"/>
-        <Button Content="Cancel" IsCancel="True" Canvas.Left="51" Canvas.Top="131" Width="75" Name="CancelButton" RenderTransformOrigin="0.987,-3.906"/>
-        <Button Content="OK" Canvas.Left="151" Canvas.Top="131" Width="75" Name="OkButton" Click="OkButton_Click"/>
+        <TextBox Height="17" Canvas.Left="141" TextWrapping="Wrap" Canvas.Top="70" Width="63" Name="txtStart"
+                 Validation.ErrorTemplate="{StaticResource validationTemplate}"
+                 Style="{StaticResource textBoxInError}">
+            <TextBox.Text >
+                <Binding Path="Start" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <local:AddCounterValidationRule ></local:AddCounterValidationRule>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        <TextBlock Canvas.Left="62" TextWrapping="Wrap" Text="Bước nhảy:" Canvas.Top="123"/>
+        <TextBox Height="17" Canvas.Left="141" TextWrapping="Wrap" Canvas.Top="123" Width="63" Name="txtStep" 
+                 Validation.ErrorTemplate="{StaticResource validationTemplate}"
+                 Style="{StaticResource textBoxInError}">
+            <TextBox.Text >
+                <Binding Path="Step" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <local:AddCounterValidationRule ></local:AddCounterValidationRule>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        <Button Content="Cancel" IsCancel="True" Canvas.Left="46" Canvas.Top="182" Width="75" Name="CancelButton" RenderTransformOrigin="0.987,-3.906"/>
+        <Button Content="OK" Canvas.Left="152" Canvas.Top="182" Width="75" Name="OkButton" Click="OkButton_Click"/>
     </Canvas>
 </Window>

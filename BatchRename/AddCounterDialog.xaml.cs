@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,18 +25,20 @@ namespace BatchRename
         
         public delegate void AddRule(string methodName, int start, int step);
         public event AddRule NewRuleReceived = null;
+        AddCounterValidationRule addCounterRule = new AddCounterValidationRule();
         public AddCounterDialog()
         {
             InitializeComponent();
+            this.DataContext = addCounterRule;
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            
-            if (txtStart.Text == "" || txtStep.Text == "")
+           
+            if (!addCounterRule.Validate(txtStart.Text, new CultureInfo("en-US")).IsValid
+                || !addCounterRule.Validate(txtStep.Text, new CultureInfo("en-US")).IsValid)
             {
-                MessageBox.Show("Thông tin chưa được điền");
-                this.DialogResult = false;
+                MessageBox.Show("Vui lòng điền chính xác thông tin cho thứ tự bắt đầu và bước nhảy");
                 return;
             }
             if (NewRuleReceived != null)
@@ -43,5 +48,43 @@ namespace BatchRename
             this.DialogResult = true;
             this.Close();
         }
+    }
+    public partial class AddCounterValidationRule : ValidationRule, INotifyPropertyChanged
+    {
+
+        public string Start { get; set; }
+        public string Step { get; set; }
+        public string ErrorContent { get; set; }
+        public event PropertyChangedEventHandler? PropertyChanged;
+        public AddCounterValidationRule() {
+            this.Start = "";
+            this.Step = "";
+            this.ErrorContent = "";
+        }
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+
+            string buffer = value.ToString();
+            ValidationResult result = ValidationResult.ValidResult;
+
+            if (buffer != null && buffer.Length > 0)
+            {
+                string pattern = @"^[0-9]+$";
+                var regex = new Regex(pattern);
+                if (regex.IsMatch(buffer))
+                {
+    
+                }
+                else { 
+                    result = new ValidationResult(false, "Phần này chỉ bao gồm chữ số!");
+                }
+            }
+            else
+            {
+                result = new ValidationResult(false, "Phần này không được để trống!");
+            }
+            return result;
+        }
+
     }
 }

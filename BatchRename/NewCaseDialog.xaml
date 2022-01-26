@@ -11,7 +11,7 @@
         <Label Content="THAY ĐỔI KIỂU CHỮ" FontSize="16" Height="42" Width="155" RenderTransformOrigin="0.332,1.373"/>
         
         <CheckBox Name="cbLowerCase" Content="Tất cả chuyển sang chữ thường"  Margin="20,10,10,10" />
-        <CheckBox Name="cbRemoveSpace" Content="Xóa tất cả khoảng trắng" Margin="20,10,10,10"  />
+        <CheckBox Name="cbRemoveSpace" Content="Xóa tất cả khoảng trắng ở đầu và cuối" Margin="20,10,10,10"  />
         <CheckBox Name="cbPascalCase" Content="Chuyển về dạng PascalCase" Margin="20,10,10,10"  />
         <Canvas Height="100">
         <Button Content="Cancel" IsCancel="True" Canvas.Left="53" Canvas.Top="20" Width="75" Name="CancelButton" RenderTransformOrigin="0.987,-3.906"/>

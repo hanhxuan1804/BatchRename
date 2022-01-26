@@ -3,14 +3,46 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:BatchRename"
+        xmlns:local="clr-namespace:BatchRename" d:DataContext="{d:DesignInstance Type=local:ReplaceRuleValidation}"
         mc:Ignorable="d"
-        Title="ReplaceExtensionDialog" Height="220" Width="280">
+        Title="ReplaceExtensionDialog" Height="250" Width="280">
+    <Window.Resources>
+        <ControlTemplate x:Key="validationTemplate">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="1" Foreground="Red" Text="{Binding ErrorContent}" Width="100" TextWrapping="Wrap"></TextBlock>
+                <AdornedElementPlaceholder Grid.Row="0"></AdornedElementPlaceholder>
+            </Grid>
+        </ControlTemplate>
+        <Style x:Key="textBoxInError" TargetType="{x:Type TextBox}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip"
+                            Value="{Binding RelativeSource={x:Static RelativeSource.Self},Path=(Validation.Errors)[0].ErrorContent}"></Setter>
+
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Canvas Height="205" VerticalAlignment="Top">
         <Label Content="THAY ĐỔI PHẦN MỞ RỘNG" FontSize="16" Height="38" Width="214" Canvas.Left="34" Canvas.Top="10" RenderTransformOrigin="0.332,1.373"/>
         <TextBlock Canvas.Left="22" TextWrapping="Wrap" Text="Đổi phần mở rộng thành:" Canvas.Top="69"/>
-        <TextBox Height="17" Canvas.Left="163" TextWrapping="Wrap" Canvas.Top="69" Width="63" Name="NewString"/>
-        <Button Content="Cancel" IsCancel="True" Canvas.Left="51" Canvas.Top="121" Width="75" Name="CancelButton" RenderTransformOrigin="0.987,-3.906"/>
-        <Button Content="OK" Canvas.Left="151" Canvas.Top="121" Width="75" Name="OkButton" Click="OkButton_Click"/>
+        <TextBox Height="17" Canvas.Left="163" TextWrapping="Wrap" Canvas.Top="69" Width="63" Name="NewString"
+                 
+                 Validation.ErrorTemplate="{StaticResource validationTemplate}"
+                 Style="{StaticResource textBoxInError}">
+            <TextBox.Text >
+                <Binding Path="Extension" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <local:ReplaceRuleValidation > </local:ReplaceRuleValidation>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        <Button Content="Cancel" IsCancel="True" Canvas.Left="51" Canvas.Top="142" Width="75" Name="CancelButton" RenderTransformOrigin="0.987,-3.906"/>
+        <Button Content="OK" Canvas.Left="151" Canvas.Top="142" Width="75" Name="OkButton" Click="OkButton_Click"/>
     </Canvas>
 </Window>
