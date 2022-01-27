@@ -1,4 +1,4 @@
-#Info
+# Info
 - Họ và tên: Nguyễn Xuân Hạnh
 - MSSV: 19120218
 
@@ -28,10 +28,8 @@
 
 1. Change the extension to another extension (no conversion, force renaming extension)
 2. Add counter to the end of the file
-    - [ ]  Could specify the start value, steps, number of digits (Could have padding like 01, 02, 03...10....99)
 3. Remove all space from the beginning and the ending of the filename
-4. Replace certain characters into one character like replacing "-" ad "_" into space " "
-    - [ ]  Could be the other way like replace all space " " into dot "."
+4. Replace certain characters into one character like replacing "-", "_" and " " into dot "."
 5. Adding a prefix to all the files
 6. Adding a suffix to all the files
 7. Convert all characters to lowercase, remove all spaces
@@ -53,4 +51,4 @@
 
 
 # Expected grade
-==10==
+***10***
