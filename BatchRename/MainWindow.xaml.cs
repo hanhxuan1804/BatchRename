@@ -741,7 +741,7 @@ namespace BatchRename
                 foreach (var file in files)
                 {
                     CStorageFile f = new CStorageFile();
-                    f.Name = System.IO.Path.GetFileName(file);
+                    f.Name = System.IO.Path.GetFileName(file);                    
                     f.NewName = f.Name;
                     f.Path = file;
                     f.Type = "File";
@@ -753,6 +753,42 @@ namespace BatchRename
             }
         }
 
+        private void MenuItem_Click_3(object sender, RoutedEventArgs e)
+        {
+            int index = listFiles.SelectedIndex;
+            if (index < 0 || index > list.Count)
+            {
+                return;
+            }
+            list.RemoveAt(index);
+        }
+
+        private void MenuItem_Click_4(object sender, RoutedEventArgs e)
+        {
+            int i = listFiles.SelectedIndex;
+            if (list[i].Type == "File")
+            {
+
+                FileInfo file = new FileInfo(list[i].Path);
+                if (file.Exists && file != null)
+                {
+                    file.MoveTo(Path.Combine(file.Directory.FullName, list[i].NewName));
+
+                    list[i].Name = file.Name;
+                    list[i].Path = file.FullName;
+                }
+            }
+            else
+            {
+                DirectoryInfo directory = new DirectoryInfo(list[i].Path);
+                if (directory.Exists && directory != null)
+                {
+                    directory.MoveTo(Path.Combine(directory.Parent.FullName, list[i].NewName));
+                    list[i].Name = directory.Name;
+                    list[i].Path = directory.FullName;
+                }
+            }
+        }
     }
 }
 

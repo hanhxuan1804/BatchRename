@@ -147,8 +147,8 @@
                 </ListView.View>
                 <ListView.Resources>
                     <ContextMenu x:Key="ItemContextMenu">
-                        <MenuItem Header="Delete" ></MenuItem>
-                        <MenuItem Header="Update" ></MenuItem>
+                        <MenuItem Header="Delete" Click="MenuItem_Click_3"></MenuItem>
+                        <MenuItem Header="Apply Rename" Click="MenuItem_Click_4"></MenuItem>
                     </ContextMenu>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="CornerRadius" Value="15"/>
