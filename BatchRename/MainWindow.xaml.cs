@@ -47,20 +47,31 @@ namespace BatchRename
         {
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            if (!File.Exists("WindowState.xlsx"))
+            {
+                File.Create("WindowState.xlsx");
+            }
             Workbook wb = new Workbook("WindowState.xlsx");
+            
             Worksheet sheet = wb.Worksheets[0];
             if (sheet != null)
             {
-                if (sheet.Cells["B5"].Value.ToString() == "Maximized")
+           
+                if (sheet.Cells["B5"].Value != null && sheet.Cells["B5"].Value.ToString() == "Maximized")
                 {
                     this.WindowState = WindowState.Maximized;
                 }
                 else
                 {
-                    this.Height = double.Parse(sheet.Cells["B1"].Value.ToString());
-                    this.Width = double.Parse(sheet.Cells["B2"].Value.ToString());
-                    this.Top = double.Parse(sheet.Cells["B3"].Value.ToString());
-                    this.Left = double.Parse(sheet.Cells["B4"].Value.ToString());
+                    if(sheet.Cells["B1"].Value != null && sheet.Cells["B2"].Value != null &&
+                        sheet.Cells["B3"].Value != null && sheet.Cells["B4"].Value != null)
+                    {
+
+                        this.Height = double.Parse(sheet.Cells["B1"].Value.ToString());
+                        this.Width = double.Parse(sheet.Cells["B2"].Value.ToString());
+                        this.Top = double.Parse(sheet.Cells["B3"].Value.ToString());
+                        this.Left = double.Parse(sheet.Cells["B4"].Value.ToString());
+                    }
                 }
 
             }
@@ -710,6 +721,7 @@ namespace BatchRename
 
                 }
             }
+            reapplyAllRules();
         }
 
         //Xóa bộ luật đã lưu
